@@ -25,6 +25,7 @@ def validate_user(role, username, password):
     print("🧪 validate_user() fetched:", users)
     return users.get(username, {}).get("password") == password
 
+
 def post_note(title, content): _put(f"notes/{title}", {"content": content})
 def get_notes(): return _get("notes")
 
