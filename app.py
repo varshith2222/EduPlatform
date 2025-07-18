@@ -1,34 +1,26 @@
 import streamlit as st
-import requests, os
+from utils.auth import login_form
+from utils.layout import tutor_dashboard, student_dashboard
+import os
+DB_URL = os.getenv("FIREBASE_DB_URL")
+print("🔥 FIREBASE_DB_URL from app.py:", DB_URL)
 
-DB_URL = os.getenv("FIREBASE_DB_URL").rstrip("/")
-print("🔥 Firebase DB URL:", DB_URL)
 
-def _get(path):
-    try:
-        response = requests.get(f"{DB_URL}/{path}.json")
-        print(f"📡 GET {path} → {response.status_code}")
-        return response.json() or {}
-    except Exception as e:
-        print(f"❌ GET error for {path}:", e)
-        return {}
+st.set_page_config(page_title="EduPlatform", layout="wide")
+st.title("🎓 EduPlatform")
 
-def validate_user(role, username, password):
-    users = _get(f"users/{role.lower()}s")
-    print(f"🧪 Role: {role}, Username: {username}, Password: {password}")
-    print("🧪 Fetched users:", users)
-    actual_password = users.get(username, {}).get("password")
-    print("🧪 Actual password from DB:", actual_password)
-    return actual_password == password
+for key in ["logged_in", "role", "username"]:
+    if key not in st.session_state: st.session_state[key] = None
 
-st.title("🧪 Login Test")
-
-role = st.selectbox("Role", ["Student", "Tutor"])
-username = st.text_input("Username")
-password = st.text_input("Password", type="password")
-
-if st.button("Login"):
-    if validate_user(role, username, password):
-        st.success("✅ Login successful!")
-    else:
-        st.error("❌ Invalid username or password.")
+if not st.session_state.logged_in:
+    role = st.selectbox("Login as", ["Select", "Tutor", "Student"])
+    if role != "Select": login_form(role)
+else:
+    st.sidebar.success(f"Welcome {st.session_state.username}!")
+    if st.sidebar.button("Logout"):
+        st.session_state.logged_in = None
+        st.session_state.username = None
+        st.session_state.role = None
+        st.rerun()
+    if st.session_state.role == "Tutor": tutor_dashboard()
+    elif st.session_state.role == "Student": student_dashboard(st.session_state.username)
