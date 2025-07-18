@@ -22,8 +22,11 @@ def _post(path, data):
 
 def validate_user(role, username, password):
     users = _get(f"users/{role.lower()}s")
-    print("🧪 validate_user() fetched:", users)
-    return users.get(username, {}).get("password") == password
+    print(f"🧪 Role: {role}, Username: {username}, Password: {password}")
+    print("🧪 Fetched users:", users)
+    actual_password = users.get(username, {}).get("password")
+    print("🧪 Actual password from DB:", actual_password)
+    return actual_password == password
 
 
 def post_note(title, content): _put(f"notes/{title}", {"content": content})
