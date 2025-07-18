@@ -2,8 +2,9 @@ import streamlit as st
 from utils.auth import login_form
 from utils.layout import tutor_dashboard, student_dashboard
 import os
+DB_URL = os.getenv("FIREBASE_DB_URL")
+print("🔥 FIREBASE_DB_URL from app.py:", DB_URL)
 
-print("🔥 FIREBASE_DB_URL from app.py:", os.getenv("FIREBASE_DB_URL"))
 
 st.set_page_config(page_title="EduPlatform", layout="wide")
 st.title("🎓 EduPlatform")
