@@ -4,6 +4,7 @@ from datetime import datetime
 
 load_dotenv()
 DB_URL = os.getenv("FIREBASE_DB_URL").rstrip("/")
+print("🔥 Firebase DB URL:", DB_URL)
 FIXED_MEET_LINK = "https://meet.google.com/abc-defg-hij"
 
 def _get(path):
