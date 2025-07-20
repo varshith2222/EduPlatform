@@ -1,6 +1,6 @@
 import streamlit as st
-from utils import database as db
 import time
+from utils import database as db
 
 def tutor_dashboard():
     st.title("Tutor Dashboard")
@@ -14,8 +14,7 @@ def tutor_dashboard():
             db.post_note(title, content)
             st.success("Note posted!")
 
-        notes = db.get_notes()
-        for title, note in notes.items():
+        for title, note in db.get_notes().items():
             st.markdown(f"**{title}**")
             st.write(note["content"])
 
@@ -27,12 +26,11 @@ def tutor_dashboard():
             db.post_assignment(title, content)
             st.success("Assignment posted!")
 
-        assignments = db.get_assignments()
-        for title, note in assignments.items():
+        for title, note in db.get_assignments().items():
             st.markdown(f"**{title}**")
             st.write(note["content"])
 
-    # 📡 Meeting — Start only
+    # 📡 Meeting — Tutor starts and joins
     with tabs[2]:
         link, active = db.get_meeting()
         if not active:
@@ -41,22 +39,22 @@ def tutor_dashboard():
                 db.log_activity("tutor", "Started the meeting")
                 st.success("Meeting started!")
 
-                # 🔗 Open meeting in a new tab
+                # Open Google Meet in new tab
                 st.markdown(f"""
                     <script>
                     window.open("{db.FIXED_MEET_LINK}", "_blank");
                     </script>
                 """, unsafe_allow_html=True)
         else:
-            st.success("Meeting is currently active ✅")
+            st.success("Meeting is active ✅")
 
     # ❓ Doubts
     with tabs[3]:
-        doubts = db.get_doubts()
-        for id, d in doubts.items():
+        for id, d in db.get_doubts().items():
             st.markdown(f"**{d['user']} asked:** {d['question']}")
             for ans in d["answers"]:
                 st.write(f"💬 {ans}")
+
             reply = st.text_area(f"Answer to {id}", key=f"ans_{id}")
             image = st.file_uploader("Attach Image (optional)", type=["png", "jpg", "jpeg"], key=f"img_{id}")
             if st.button(f"Reply to {id}", key=f"btn_{id}"):
@@ -66,7 +64,7 @@ def tutor_dashboard():
                 db.post_answer(id, answer)
                 st.success("Answer posted!")
 
-    # 🕒 Logs
+    # 🕒 Activity Logs
     with tabs[4]:
         logs = db.get_all_activities()
         for log in logs.values():
@@ -79,18 +77,16 @@ def student_dashboard(username):
 
     # 📚 Notes
     with tabs[0]:
-        notes = db.get_notes()
-        for title, note in notes.items():
+        for title, note in db.get_notes().items():
             st.markdown(f"**{title}**")
             st.write(note["content"])
             db.log_activity(username, f"Viewed note: {title}")
 
     # 📌 Assignments
     with tabs[1]:
-        assignments = db.get_assignments()
-        for title, note in assignments.items():
+        for title, assignment in db.get_assignments().items():
             st.markdown(f"**{title}**")
-            st.write(note["content"])
+            st.write(assignment["content"])
             db.log_activity(username, f"Viewed assignment: {title}")
 
     # ❓ Doubts
@@ -100,11 +96,11 @@ def student_dashboard(username):
             db.post_doubt(username, question)
             db.log_activity(username, "Posted doubt")
 
-        doubts = db.get_doubts()
-        for id, d in doubts.items():
+        for id, d in db.get_doubts().items():
             st.markdown(f"**{d['user']} asked:** {d['question']}")
             for ans in d["answers"]:
                 st.write(f"💬 {ans}")
+
             reply = st.text_input(f"Reply to {id}", key=f"reply_{id}")
             image = st.file_uploader("Attach Image (optional)", type=["png", "jpg", "jpeg"], key=f"img_{id}")
             if st.button(f"Post Answer {id}", key=f"btn_{id}"):
@@ -114,7 +110,7 @@ def student_dashboard(username):
                 db.post_answer(id, answer)
                 st.success("Answer posted!")
 
-    # 📡 Meeting — Join only
+    # 📡 Meeting — Student joins only if active
     with tabs[3]:
         link, active = db.get_meeting()
         if active and link:
