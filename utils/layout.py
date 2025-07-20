@@ -16,7 +16,10 @@ def tutor_dashboard():
 
         for title, note in db.get_notes().items():
             st.markdown(f"**{title}**")
+        if isinstance(note, dict) and "content" in note:
             st.write(note["content"])
+        else:
+            st.write(note)
 
     # 📌 Assignments
     with tabs[1]:
