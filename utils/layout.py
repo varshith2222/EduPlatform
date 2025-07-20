@@ -40,11 +40,14 @@ def tutor_dashboard():
                 db.log_activity("tutor", "Started the meeting")
                 st.success("Meeting started!")
 
-                # 🚀 Open meeting link in new tab
+                # 🎥 Reliable meeting button to open Google Meet
+                meet_url = db.FIXED_MEET_LINK
                 st.markdown(f"""
-                    <script>
-                    window.open("{db.FIXED_MEET_LINK}", "_blank");
-                    </script>
+                    <a href="{meet_url}" target="_blank">
+                        <button style='padding:10px;background-color:#4CAF50;border:none;color:white;font-size:16px;cursor:pointer;'>
+                            🎥 Enter Google Meet as Host
+                        </button>
+                    </a>
                 """, unsafe_allow_html=True)
         else:
             st.success("Meeting is currently active ✅")
@@ -52,6 +55,7 @@ def tutor_dashboard():
                 db.end_meeting()
                 db.log_activity("tutor", "Ended the meeting")
                 st.warning("Meeting ended for all participants")
+
 
     # ❓ Doubts
     with tabs[3]:
@@ -120,12 +124,18 @@ def student_dashboard(username):
         link, active = db.get_meeting()
         if active and link:
             st.success("Live class is in session ✅")
-            if st.button("Join Meeting"):
-                db.log_activity(username, "Joined the meeting")
-                st.markdown(f"""
-                    <script>
-                    window.open("{link}", "_blank");
-                    </script>
-                """, unsafe_allow_html=True)
+            # Styled button-like link
+            join_button_html = f"""
+            <a href="{link}" target="_blank">
+                <button style='padding:10px 20px;background-color:#1f77b4;border:none;color:white;
+                               font-size:16px;border-radius:5px;cursor:pointer;'>
+                    🎥 Join Google Meet
+                </button>
+            </a>
+            """
+            st.markdown(join_button_html, unsafe_allow_html=True)
+            db.log_activity(username, "Viewed Join Meeting option")
         else:
             st.info("No active meeting yet.")
+
+
