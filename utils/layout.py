@@ -30,23 +30,28 @@ def tutor_dashboard():
             st.markdown(f"**{title}**")
             st.write(note["content"])
 
-    # 📡 Meeting — Tutor starts and joins
+    # 📡 Meeting Controls
     with tabs[2]:
         link, active = db.get_meeting()
+
         if not active:
             if st.button("Start Meeting"):
                 db.create_meeting()
                 db.log_activity("tutor", "Started the meeting")
                 st.success("Meeting started!")
 
-                # Open Google Meet in new tab
+                # 🚀 Open meeting link in new tab
                 st.markdown(f"""
                     <script>
                     window.open("{db.FIXED_MEET_LINK}", "_blank");
                     </script>
                 """, unsafe_allow_html=True)
         else:
-            st.success("Meeting is active ✅")
+            st.success("Meeting is currently active ✅")
+            if st.button("End Meeting"):
+                db.end_meeting()
+                db.log_activity("tutor", "Ended the meeting")
+                st.warning("Meeting ended for all participants")
 
     # ❓ Doubts
     with tabs[3]:
@@ -110,7 +115,7 @@ def student_dashboard(username):
                 db.post_answer(id, answer)
                 st.success("Answer posted!")
 
-    # 📡 Meeting — Student joins only if active
+    # 📡 Meeting Join
     with tabs[3]:
         link, active = db.get_meeting()
         if active and link:
