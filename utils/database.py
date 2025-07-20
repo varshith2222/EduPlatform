@@ -15,7 +15,7 @@ print("🔥 Firebase DB URL:", DB_URL)
 print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
 
 # 🔗 Fixed meeting link
-FIXED_MEET_LINK = "https://meet.google.com/kbm-jmje-tqx"
+FIXED_MEET_LINK = "http://meet.google.com/huq-xcht-qcb"
 
 # 🔧 Firebase GET
 def _get(path):
