@@ -16,10 +16,10 @@ def tutor_dashboard():
 
         for title, note in db.get_notes().items():
             st.markdown(f"**{title}**")
-        if isinstance(note, dict) and "content" in note:
-            st.write(note["content"])
-        else:
-            st.write(note)
+            if isinstance(note, dict) and "content" in note:
+                st.write(note["content"])
+            else:
+                st.write(note)
 
     # 📌 Assignments
     with tabs[1]:
@@ -31,7 +31,10 @@ def tutor_dashboard():
 
         for title, note in db.get_assignments().items():
             st.markdown(f"**{title}**")
-            st.write(note["content"])
+            if isinstance(note, dict) and "content" in note:
+                st.write(note["content"])
+            else:
+                st.write(note)
 
     # 📡 Meeting Controls
     with tabs[2]:
@@ -43,7 +46,7 @@ def tutor_dashboard():
                 db.log_activity("tutor", "Started the meeting")
                 st.success("Meeting started!")
 
-                # 🎥 Reliable meeting button to open Google Meet
+                # 🎥 Reliable button to open Google Meet
                 meet_url = db.FIXED_MEET_LINK
                 st.markdown(f"""
                     <a href="{meet_url}" target="_blank">
@@ -59,12 +62,11 @@ def tutor_dashboard():
                 db.log_activity("tutor", "Ended the meeting")
                 st.warning("Meeting ended for all participants")
 
-
     # ❓ Doubts
     with tabs[3]:
         for id, d in db.get_doubts().items():
             st.markdown(f"**{d['user']} asked:** {d['question']}")
-            for ans in d["answers"]:
+            for ans in d.get("answers", []):
                 st.write(f"💬 {ans}")
 
             reply = st.text_area(f"Answer to {id}", key=f"ans_{id}")
@@ -91,14 +93,20 @@ def student_dashboard(username):
     with tabs[0]:
         for title, note in db.get_notes().items():
             st.markdown(f"**{title}**")
-            st.write(note["content"])
+            if isinstance(note, dict) and "content" in note:
+                st.write(note["content"])
+            else:
+                st.write(note)
             db.log_activity(username, f"Viewed note: {title}")
 
     # 📌 Assignments
     with tabs[1]:
         for title, assignment in db.get_assignments().items():
             st.markdown(f"**{title}**")
-            st.write(assignment["content"])
+            if isinstance(assignment, dict) and "content" in assignment:
+                st.write(assignment["content"])
+            else:
+                st.write(assignment)
             db.log_activity(username, f"Viewed assignment: {title}")
 
     # ❓ Doubts
@@ -110,7 +118,7 @@ def student_dashboard(username):
 
         for id, d in db.get_doubts().items():
             st.markdown(f"**{d['user']} asked:** {d['question']}")
-            for ans in d["answers"]:
+            for ans in d.get("answers", []):
                 st.write(f"💬 {ans}")
 
             reply = st.text_input(f"Reply to {id}", key=f"reply_{id}")
@@ -140,5 +148,3 @@ def student_dashboard(username):
             db.log_activity(username, "Viewed Join Meeting option")
         else:
             st.info("No active meeting yet.")
-
-
